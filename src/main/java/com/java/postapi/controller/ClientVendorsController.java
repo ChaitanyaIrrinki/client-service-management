@@ -2,6 +2,7 @@ package com.java.postapi.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.java.postapi.model.ClientVendors;
+import com.java.postapi.service.ClientVendorsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

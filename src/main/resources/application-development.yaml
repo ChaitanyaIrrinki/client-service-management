@@ -1,0 +1,37 @@
+logging:
+  pattern:
+    - file
+  level:
+    root: error
+    io.qount._services: debug
+    org.springframework.web.filter.CommonsRequestLoggingFilter: debug
+    org.springframework.web: error
+    org.hibernate: error
+  file:
+    name: logs/1099Services.log
+
+mysql:
+  config:
+    database: database
+    credentials:
+      id: root
+      password: Chai@123
+
+alb:
+  url: http://qount-cluster-1-alb-489726695.us-east-1.elb.amazonaws.com:1144/
+  baseUrl: https://dev-services.qount.io/
+
+endpoints:
+  vendor:
+    url: http://prod-alb-451599241.us-east-1.elb.amazonaws.com:1144/qbo-datasource-service/entities/{clientId}/vendors?reFetch=true
+
+aws:
+  sqs:
+    document-upload-queue: dev-io-qount-filemanagement-document
+    entity-document-queue : io-qount-entity-document-dev
+
+sns:
+  topic:
+    tray: arn:aws:sns:us-east-1:060399345565:io-qount-document-tray.fifo
+
+

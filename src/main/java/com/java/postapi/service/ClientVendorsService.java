@@ -1,15 +1,34 @@
 package com.java.postapi.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.postapi.entity.ClientVendorMappingEntity;
 import com.java.postapi.entity.ClientVendorsEntityMapping;
+import com.java.postapi.entity.FilingStatusEnumMapping;
 import com.java.postapi.model.ClientVendors;
+import com.java.postapi.repository.ClientVendorsEntityMappingRepository;
+import com.java.postapi.repository.ClientVendorsMappingEntityRepository;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Year;
 import java.util.UUID;
-
+@Service
 public class ClientVendorsService {
+    @Autowired
+    private final ObjectMapper objectMapper;
+    private final ClientVendorsEntityMappingRepository clientVendorsEntityMappingRepository;
+    private final ClientVendorsMappingEntityRepository  clientVendorsMappingEntityRepository;
+
+
+    public ClientVendorsService(ObjectMapper objectMapper, ClientVendorsEntityMappingRepository clientVendorsEntityMappingRepository, ClientVendorsMappingEntityRepository clientVendorsMappingEntityRepository) {
+        this.objectMapper = objectMapper;
+        this.clientVendorsEntityMappingRepository = clientVendorsEntityMappingRepository;
+        this.clientVendorsMappingEntityRepository = clientVendorsMappingEntityRepository;
+    }
+
     /**
      * Creates a new vendor with a generated UUID and saves it to the database.
      * Sends an SQS message if the vendor contains a valid payload.
@@ -25,14 +44,10 @@ public class ClientVendorsService {
             if (StringUtils.isBlank(vendor.getFilingStatus())) {
                 vendor.setFilingStatus("Not_started");
             }
-            repository.save(clientVendorsToClientVendorsEntity(vendor));
+          clientVendorsEntityMappingRepository.save(clientVendorsToClientVendorsEntity(vendor));
         }
         clientVendorsMappingEntityRepository.save(clientVendorMappingModelToEntity(vendor));
-        processVendorForMissingInfo(vendor.getId(), vendor.getClientId(), vendor.getYear(),vendor);
-        if (vendor.getDocument() != null && !vendor.getDocument().isEmpty()) {
-            publishToFileMgmt(vendor, org, user);
-        }
-        publishSqsEvent(vendor, org);
+
         return vendor;
     }
 
